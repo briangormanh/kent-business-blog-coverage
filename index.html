@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog Coverage Plot - Kent Crawford College of Business</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0e1c2b; --ink2:#16293a; --ink3:#1f3850;
+    --paper:#eceef0; --card:#fff; --line:#dde2e6; --line-d:#cbd3d9;
+    --text:#16293a; --muted:#5f7180; --muted2:#8a99a4;
+    --teal:#1fb6c4; --teal-d:#0f8a96;
+    --gold:#e0a64a; --gold-d:#b07e25;
+    --rust:#cf5a3c; --rust-d:#a8462d;
+    --slate:#7c8a96;
+    --teal-soft:#e2f4f6; --gold-soft:#f8eed8; --rust-soft:#f8e4dd; --slate-soft:#eceff1;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--text);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--teal);font-weight:500}
+
+  /* ---------- STAGE (dark instrument zone) ---------- */
+  .stage{background:var(--ink);color:#dfe7ec;position:relative;overflow:hidden}
+  .stage::before{content:"";position:absolute;inset:0;
+    background-image:linear-gradient(#ffffff09 1px,transparent 1px),linear-gradient(90deg,#ffffff09 1px,transparent 1px);
+    background-size:46px 46px;mask-image:radial-gradient(ellipse 90% 75% at 70% 30%,#000 30%,transparent 80%);
+    -webkit-mask-image:radial-gradient(ellipse 90% 75% at 70% 30%,#000 30%,transparent 80%);pointer-events:none}
+  .stage-inner{max-width:1180px;margin:0 auto;padding:30px 34px 56px;position:relative;z-index:1}
+
+  /* top registration bar */
+  .reg{display:flex;justify-content:space-between;align-items:center;gap:16px;
+    padding-bottom:22px;border-bottom:1px solid #ffffff1a;flex-wrap:wrap}
+  .reg .mark{font-family:"Archivo",sans-serif;font-weight:800;letter-spacing:.02em;font-size:15px;color:#fff;display:flex;align-items:center;gap:11px}
+  .reg .mark i{width:11px;height:11px;border-radius:50%;background:var(--teal);
+    box-shadow:0 0 0 4px #1fb6c433, 0 0 14px 2px #1fb6c4aa;font-style:normal;display:inline-block}
+  .reg .coords{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted2);letter-spacing:.06em}
+
+  /* hero */
+  .hero{padding:46px 0 10px;max-width:880px}
+  .hero h1{font-family:"Archivo",sans-serif;font-weight:800;letter-spacing:-.015em;
+    font-size:clamp(34px,5.6vw,62px);line-height:1.02;margin:16px 0 0;color:#fff}
+  .hero h1 em{font-style:normal;color:var(--teal)}
+  .hero .thesis{font-size:clamp(16px,2vw,19px);color:#b6c4cd;max-width:660px;margin:20px 0 0}
+  .hero .thesis b{color:#fff;font-weight:600}
+
+  /* stat strip */
+  .stats{display:flex;flex-wrap:wrap;gap:0;margin:40px 0 0;border:1px solid #ffffff1f;border-radius:12px;overflow:hidden;background:#ffffff08}
+  .stat{flex:1 1 0;min-width:150px;padding:18px 22px;border-right:1px solid #ffffff14}
+  .stat:last-child{border-right:0}
+  .stat .v{font-family:"Archivo",sans-serif;font-weight:800;font-size:30px;color:#fff;line-height:1}
+  .stat .v small{font-size:15px;color:var(--teal);font-weight:700}
+  .stat .l{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted2);margin-top:8px}
+
+  /* note panel */
+  .note{margin:26px 0 0;background:#ffffff0a;border:1px solid #ffffff1f;border-left:3px solid var(--gold);
+    border-radius:10px;padding:18px 22px}
+  .note .h{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:7px}
+  .note p{margin:0;font-size:14.5px;color:#c3cfd7}
+  .note p b{color:#fff;font-weight:600}
+
+  /* ---------- THE PLOT (own full-width row) ---------- */
+  .plot-shell{margin:54px 0 0}
+  .plot-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+  .plot-head .t{font-family:"Archivo",sans-serif;font-weight:700;font-size:26px;color:#fff;margin:6px 0 0;letter-spacing:-.01em}
+  .plot-head .d{font-size:14px;color:#9fb0ba;max-width:560px;margin:8px 0 0}
+  .plot-panel{background:linear-gradient(180deg,#102236,#0c1826);border:1px solid #ffffff1f;border-radius:16px;
+    padding:10px 10px 4px;box-shadow:inset 0 1px 0 #ffffff10, 0 24px 60px -30px #000;position:relative}
+  .plot-panel svg{width:100%;height:auto;display:block}
+
+  /* interactive markers */
+  .mk{cursor:pointer}
+  .mk:focus{outline:none}
+  .mk:hover{filter:brightness(1.12)}
+  .plot-panel svg:has(.mk:hover) .mk:not(:hover),
+  .plot-panel svg:has(.mk:focus-visible) .mk:not(:focus-visible){opacity:.26 !important;transition:opacity .15s}
+
+  /* tooltip */
+  .tip{position:absolute;left:0;top:0;pointer-events:none;z-index:6;width:248px;
+    background:#0a1622;border:1px solid #ffffff2b;border-radius:13px;padding:14px 16px;
+    box-shadow:0 22px 46px -18px #000, inset 0 1px 0 #ffffff14;
+    opacity:0;transform:translateY(5px);transition:opacity .14s ease,transform .14s ease}
+  .tip.on{opacity:1;transform:none}
+  .tip .tt{font-family:"Archivo",sans-serif;font-weight:700;font-size:15px;color:#fff;line-height:1.18;
+    margin-bottom:10px;display:flex;align-items:flex-start;gap:9px}
+  .tip .tt .pip{width:11px;height:11px;border-radius:50%;flex:0 0 auto;margin-top:4px}
+  .tip .row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:5px 0;border-top:1px solid #ffffff12}
+  .tip .row .k{font-family:"IBM Plex Mono",monospace;color:#8a99a4;letter-spacing:.05em;text-transform:uppercase;font-size:10px}
+  .tip .row .val{color:#e7eef2;font-weight:600;font-family:"IBM Plex Mono",monospace;font-size:11.5px;text-align:right}
+  .tip .vpill{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px}
+  .tip .note2{font-size:11.5px;color:#aab8c1;margin-top:10px;line-height:1.5}
+
+  /* legend grid */
+  .legend{margin:18px 4px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:2px 26px}
+  @media(max-width:920px){.legend{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.legend{grid-template-columns:1fr}}
+  .li{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-top:1px solid #ffffff14}
+  .li .num{flex:0 0 auto;width:22px;height:22px;border-radius:50%;font-family:"IBM Plex Mono",monospace;
+    font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .li .num.s-gap{background:transparent;border:1.5px dashed var(--rust);color:#f0a892}
+  .li .num.s-part{background:transparent;border:1.5px solid var(--gold);color:var(--gold)}
+  .li .num.s-str{background:var(--teal);color:#04222a;box-shadow:0 0 10px #1fb6c466}
+  .li .num.s-over{background:var(--slate);color:#10202b}
+  .li .tx{font-size:12.5px;line-height:1.35}
+  .li .tx b{color:#eef3f6;font-weight:600;display:block;font-size:12.5px}
+  .li .tx span{color:var(--muted2);font-size:11.5px}
+
+  .keystrip{display:flex;gap:22px;flex-wrap:wrap;margin:20px 4px 0;font-family:"IBM Plex Mono",monospace;
+    font-size:11.5px;letter-spacing:.04em;color:#9fb0ba;padding-top:16px;border-top:1px solid #ffffff14}
+  .keystrip .k{display:flex;align-items:center;gap:8px}
+  .keystrip .g{width:16px;height:16px;border-radius:50%;flex:0 0 auto}
+  .g.str{background:var(--teal);box-shadow:0 0 8px #1fb6c4aa}
+  .g.part{border:2px solid var(--gold)}
+  .g.gap{border:2px dashed var(--rust)}
+  .g.over{background:var(--slate)}
+
+  /* AI-prompts panel (Figure 02) */
+  .prompts{margin:56px 0 0}
+  .pbox{padding:10px 20px 16px}
+  .prow{display:grid;grid-template-columns:26px minmax(150px,1.5fr) 1fr 34px 78px;align-items:center;gap:15px;
+    padding:10px 0;border-top:1px solid #ffffff12}
+  .prow:first-child{border-top:0}
+  .prank{font-family:"IBM Plex Mono",monospace;font-size:11px;color:#5f7180}
+  .plabel{font-size:13.5px;color:#dfe7ec;font-weight:500;line-height:1.3}
+  .pbar{height:8px;border-radius:4px;background:#ffffff12;overflow:hidden}
+  .pbar>i{display:block;height:100%;border-radius:4px}
+  .pscore{font-family:"IBM Plex Mono",monospace;font-size:12px;color:#aab8c1;text-align:right}
+  .pstat{font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;text-transform:uppercase;
+    letter-spacing:.04em;text-align:center;padding:4px 0;border-radius:999px}
+  .pstat.gap{background:#5a2317;color:#f0a892}
+  .pstat.part{background:#5a4416;color:#e7b76a}
+  .pstat.str{background:#0a3d44;color:#5fe0ec}
+  .pnote{font-family:"IBM Plex Mono",monospace;font-size:11px;color:#7c8a96;margin:16px 4px 0;letter-spacing:.02em;line-height:1.5}
+  @media(max-width:680px){.prow{grid-template-columns:22px 1fr 32px 72px}.pbar{display:none}}
+
+  /* ---------- PAPER sections ---------- */
+  .paper{max-width:1180px;margin:0 auto;padding:74px 34px 30px}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:8px}
+  .sec-head .idx{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--teal-d);font-weight:600;letter-spacing:.05em}
+  .sec-head h2{font-family:"Archivo",sans-serif;font-weight:700;font-size:clamp(24px,3.4vw,34px);
+    letter-spacing:-.015em;margin:0;color:var(--ink)}
+  .sec-lead{color:var(--muted);font-size:15.5px;max-width:780px;margin:0 0 26px}
+
+  /* matrix table */
+  .tablecard{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  table{width:100%;border-collapse:collapse}
+  thead th{background:#f4f6f7;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);font-weight:600;text-align:left;padding:13px 16px;border-bottom:1px solid var(--line)}
+  tbody td{padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:14px}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:#f8fafb}
+  td.cluster{font-weight:600;color:var(--ink);white-space:nowrap}
+  td.terms{color:var(--muted);font-size:12.5px;font-family:"IBM Plex Mono",monospace}
+  td.num{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:15px;text-align:center;width:64px}
+  .bar{position:relative;height:6px;border-radius:3px;background:#e7ebee;width:84px;margin-top:6px;overflow:hidden}
+  .bar>i{position:absolute;inset:0 auto 0 0;border-radius:3px}
+  .verdict{display:inline-flex;align-items:center;gap:7px;font-family:"IBM Plex Mono",monospace;font-size:11px;
+    font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:999px;white-space:nowrap}
+  .v-gap{background:var(--rust-soft);color:var(--rust-d)}
+  .v-part{background:var(--gold-soft);color:var(--gold-d)}
+  .v-str{background:var(--teal-soft);color:var(--teal-d)}
+  .v-over{background:var(--slate-soft);color:var(--slate)}
+  .footnote{font-size:12px;color:var(--muted2);margin-top:10px;font-family:"IBM Plex Mono",monospace}
+
+  /* gap cards */
+  .gaps{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  @media(max-width:760px){.gaps{grid-template-columns:1fr}}
+  .gc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;position:relative;overflow:hidden}
+  .gc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--rust)}
+  .gc.amber::before{background:var(--gold)}
+  .gc .rk{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--rust-d);font-weight:600;display:flex;align-items:center;gap:8px}
+  .gc.amber .rk{color:var(--gold-d)}
+  .gc .rk i{width:7px;height:7px;border-radius:50%;border:1.5px dashed var(--rust);display:inline-block}
+  .gc.amber .rk i{border:1.5px solid var(--gold)}
+  .gc h3{font-family:"Archivo",sans-serif;font-weight:700;font-size:19px;margin:9px 0 8px;color:var(--ink);letter-spacing:-.01em}
+  .gc p{margin:0 0 13px;font-size:13.5px;color:var(--muted)}
+  .gc .why{font-size:12.5px;background:#f5f7f8;border-radius:9px;padding:11px 13px;color:var(--text);line-height:1.5}
+  .gc .why b{color:var(--teal-d);font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+  /* "a piece we'd write" pitch block */
+  .gc .pitch{margin:2px 0 14px;background:var(--teal-soft);border:1px solid #cfe9ed;border-radius:11px;padding:13px 15px}
+  .gc .pitch .lab{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--teal-d);font-weight:600;display:flex;align-items:center;gap:7px;margin-bottom:7px}
+  .gc .pitch .lab .pen{width:13px;height:13px;flex:0 0 auto;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f8a96' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20l4-1L18 7l-3-3L4 15z'/%3E%3Cpath d='M13 5l3 3'/%3E%3C/svg%3E") center/contain no-repeat}
+  .gc .pitch .ptitle{font-family:"Archivo",sans-serif;font-weight:700;font-size:15px;color:var(--ink);line-height:1.28;margin-bottom:6px}
+  .gc .pitch .pangle{font-size:12.5px;color:var(--muted);line-height:1.5}
+  .gc .pitch .alt{font-size:11.5px;color:var(--teal-d);margin-top:9px;padding-top:9px;border-top:1px dashed #c2e2e7;
+    font-family:"IBM Plex Mono",monospace;line-height:1.45}
+  /* MSABTA spotlight - a targeted opening inside a strength */
+  .gc.spotlight{margin-top:18px;background:#fbf7ee;border-color:#ecdcb4}
+  .gc.spotlight::before{background:var(--gold)}
+  .gc.spotlight .rk{color:var(--gold-d)}
+  .gc.spotlight .rk i{border:1.5px solid var(--gold)}
+  .gc.spotlight h3{font-size:20px}
+
+  /* inventory */
+  .inv{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:980px){.inv{grid-template-columns:1fr 1fr}}
+  @media(max-width:620px){.inv{grid-template-columns:1fr}}
+  .hub{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+  .hub h3{font-family:"Archivo",sans-serif;font-weight:700;font-size:18px;margin:0;color:var(--ink)}
+  .hub .meta{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted2);margin:4px 0 16px;letter-spacing:.03em}
+  .hub ul{margin:0;padding:0;list-style:none}
+  .hub li{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
+  .hub li:first-of-type{border-top:0}
+  .tagx{flex:0 0 auto;font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.04em;
+    padding:2px 7px;border-radius:5px;text-transform:uppercase}
+  .x-str{background:var(--teal-soft);color:var(--teal-d)}
+  .x-part{background:var(--gold-soft);color:var(--gold-d)}
+  .x-over{background:var(--slate-soft);color:var(--slate)}
+
+  /* footer */
+  footer{background:var(--ink);color:#9fb0ba;margin-top:64px}
+  .foot-inner{max-width:1180px;margin:0 auto;padding:40px 34px 56px}
+  .foot-inner .h{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:12px}
+  .foot-inner p{font-size:13px;max-width:920px;margin:0 0 12px;line-height:1.65}
+  .foot-inner p b{color:#dfe7ec}
+
+  @media (prefers-reduced-motion:no-preference){
+    .mk{opacity:0;transform:translateY(8px);animation:rise .5s cubic-bezier(.2,.7,.3,1) forwards}
+    @keyframes rise{to{opacity:1;transform:none}}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= STAGE ================= -->
+<section class="stage">
+  <div class="stage-inner">
+    <div class="reg">
+      <div class="mark"><i></i>BLOG COVERAGE PLOT</div>
+      <div class="coords">KENT CRAWFORD COLLEGE OF BUSINESS // PLOTTED 2026.06.25</div>
+    </div>
+
+    <div class="hero">
+      <div class="eyebrow">Audience signal vs. content coverage</div>
+      <h1>Where the blog has <em>signal</em>,<br>and where the dead zones are.</h1>
+      <p class="thesis">Forty-two evergreen posts plotted against what business-degree and MBA researchers actually search for. <b>The bright clusters are coverage working. The dashed rings are demand the blog isn't answering yet.</b></p>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="v">42</div><div class="l">Blog posts mapped</div></div>
+      <div class="stat"><div class="v">3</div><div class="l">Program hubs covered</div></div>
+      <div class="stat"><div class="v">5<small> gaps</small></div><div class="l">High-demand dead zones</div></div>
+      <div class="stat"><div class="v">430</div><div class="l">/business pages crawled</div></div>
+    </div>
+
+    <div class="note">
+      <div class="h">Orient yourself first</div>
+      <p>The college's <b>/business/news</b> section is press and announcements (rankings, awards, board appointments, construction) and is excluded here as requested. The audience-facing blog is three evergreen libraries, one each for the <b>Online MBA</b>, <b>Online MSBA</b>, and <b>MS in Accounting</b> - the three graduate programs this campaign drives leads for. Coverage of the priority programs is genuinely strong. The real openings are the cross-program questions buyers ask that none of the three hubs answer: cost and financing, admissions specifics, and program comparisons - plus one program-specific exception, the brand-new MSABTA hybrid, which has a page but no blog content yet.</p>
+    </div>
+
+    <!-- ===== THE PLOT, full width on its own row ===== -->
+    <div class="plot-shell">
+      <div class="plot-head">
+        <div>
+          <div class="eyebrow">Figure 01</div>
+          <div class="t">The coverage plot</div>
+          <div class="d">Horizontal: audience demand (SparkToro search behavior and self-described interests). Vertical: how much the blog covers it today.</div>
+        </div>
+      </div>
+
+      <div class="plot-panel">
+        <svg viewBox="0 0 1100 560" role="img" aria-label="Demand versus coverage plot. Bottom-right holds the priority gaps: high demand, low coverage.">
+          <defs>
+            <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#1fb6c4" stop-opacity=".55"/><stop offset="100%" stop-color="#1fb6c4" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <!-- quadrant washes -->
+          <rect x="120" y="50" width="465" height="225" fill="#7c8a96" opacity="0.05"/>
+          <rect x="585" y="50" width="465" height="225" fill="#1fb6c4" opacity="0.07"/>
+          <rect x="120" y="275" width="465" height="225" fill="#0a131d" opacity="0.25"/>
+          <rect x="585" y="275" width="465" height="225" fill="#cf5a3c" opacity="0.10"/>
+
+          <!-- grid -->
+          <g stroke="#ffffff" stroke-opacity="0.06" stroke-width="1">
+            <line x1="120" y1="162.5" x2="1050" y2="162.5"/><line x1="120" y1="387.5" x2="1050" y2="387.5"/>
+            <line x1="352.5" y1="50" x2="352.5" y2="500"/><line x1="817.5" y1="50" x2="817.5" y2="500"/>
+          </g>
+          <!-- mid crosshair -->
+          <line x1="585" y1="50" x2="585" y2="500" stroke="#ffffff" stroke-opacity="0.18" stroke-dasharray="5 5"/>
+          <line x1="120" y1="275" x2="1050" y2="275" stroke="#ffffff" stroke-opacity="0.18" stroke-dasharray="5 5"/>
+          <!-- frame -->
+          <line x1="120" y1="50" x2="120" y2="500" stroke="#ffffff" stroke-opacity="0.25"/>
+          <line x1="120" y1="500" x2="1050" y2="500" stroke="#ffffff" stroke-opacity="0.25"/>
+
+          <!-- quadrant labels -->
+          <text x="135" y="74" font-family="IBM Plex Mono,monospace" font-size="12" letter-spacing="1.5" fill="#8a99a4" font-weight="600">OVER-SERVED</text>
+          <text x="135" y="90" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#5f7180">low demand / well covered</text>
+          <text x="1035" y="74" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="12" letter-spacing="1.5" fill="#5fe0ec" font-weight="600">STRENGTHS</text>
+          <text x="1035" y="90" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#3f9aa4">high demand / well covered</text>
+          <text x="135" y="490" font-family="IBM Plex Mono,monospace" font-size="12" letter-spacing="1.5" fill="#5f7180" font-weight="600">LOW PRIORITY</text>
+          <text x="1035" y="296" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="13" letter-spacing="1.5" fill="#f0865f" font-weight="700">PRIORITY GAPS</text>
+          <text x="1035" y="312" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#cf7457">high demand / under-covered</text>
+
+          <!-- axis ticks -->
+          <text x="120" y="528" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" fill="#5f7180">LOW</text>
+          <text x="585" y="528" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" fill="#5f7180">DEMAND &#8594;</text>
+          <text x="1050" y="528" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" fill="#5f7180">HIGH</text>
+          <text x="104" y="500" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="11" fill="#5f7180" transform="rotate(-90 104 500)">LOW</text>
+          <text x="104" y="275" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" fill="#5f7180" transform="rotate(-90 104 275)">COVERAGE &#8594;</text>
+          <text x="104" y="50" text-anchor="start" font-family="IBM Plex Mono,monospace" font-size="11" fill="#5f7180" transform="rotate(-90 104 50)">HIGH</text>
+
+          <!-- ============ MARKERS ============ -->
+          <!-- GAP markers: dashed hollow ring + translucent fill (dead zones) -->
+          <g font-family="IBM Plex Mono,monospace" font-size="13" font-weight="600" text-anchor="middle">
+            <g class="mk" style="animation-delay:.02s"><circle cx="975.6" cy="464" r="16" fill="#cf5a3c" fill-opacity="0.16" stroke="#cf5a3c" stroke-width="2" stroke-dasharray="3.5 3.5"/><text x="975.6" y="468.5" fill="#f0a892">1</text></g>
+            <g class="mk" style="animation-delay:.06s"><circle cx="994" cy="158" r="24" fill="url(#halo)"/><circle cx="994" cy="158" r="15" fill="#1fb6c4" filter="url(#glow)"/><text x="994" y="162.5" fill="#04222a">2</text></g>
+            <g class="mk" style="animation-delay:.10s"><circle cx="864" cy="477.5" r="16" fill="#cf5a3c" fill-opacity="0.16" stroke="#cf5a3c" stroke-width="2" stroke-dasharray="3.5 3.5"/><text x="864" y="482" fill="#f0a892">3</text></g>
+            <g class="mk" style="animation-delay:.14s"><circle cx="1012.8" cy="401" r="16" fill="#cf5a3c" fill-opacity="0.16" stroke="#cf5a3c" stroke-width="2" stroke-dasharray="3.5 3.5"/><text x="1012.8" y="405.5" fill="#f0a892">4</text></g>
+            <g class="mk" style="animation-delay:.18s"><circle cx="808.2" cy="446" r="16" fill="#cf5a3c" fill-opacity="0.16" stroke="#cf5a3c" stroke-width="2" stroke-dasharray="3.5 3.5"/><text x="808.2" y="450.5" fill="#f0a892">5</text></g>
+          </g>
+          <!-- PARTIAL markers: solid gold ring -->
+          <g font-family="IBM Plex Mono,monospace" font-size="13" font-weight="600" text-anchor="middle">
+            <g class="mk" style="animation-delay:.22s"><circle cx="910.5" cy="351.5" r="15" fill="#e0a64a" fill-opacity="0.14" stroke="#e0a64a" stroke-width="2"/><text x="910.5" y="356" fill="#e7b76a">6</text></g>
+            <g class="mk" style="animation-delay:.26s"><circle cx="678" cy="401" r="15" fill="#e0a64a" fill-opacity="0.14" stroke="#e0a64a" stroke-width="2"/><text x="678" y="405.5" fill="#e7b76a">7</text></g>
+            <g class="mk" style="animation-delay:.30s"><circle cx="817.5" cy="365" r="15" fill="#e0a64a" fill-opacity="0.14" stroke="#e0a64a" stroke-width="2"/><text x="817.5" y="369.5" fill="#e7b76a">8</text></g>
+          </g>
+          <!-- STRENGTH markers: glowing filled dots (live signal) -->
+          <g font-family="IBM Plex Mono,monospace" font-size="13" font-weight="700" text-anchor="middle">
+            <g class="mk" style="animation-delay:.34s"><circle cx="957" cy="93" r="26" fill="url(#halo)"/><circle cx="957" cy="93" r="15" fill="#1fb6c4" filter="url(#glow)"/><text x="957" y="97.5" fill="#04222a">9</text></g>
+            <g class="mk" style="animation-delay:.38s"><circle cx="938.4" cy="122" r="26" fill="url(#halo)"/><circle cx="938.4" cy="122" r="15" fill="#1fb6c4" filter="url(#glow)"/><text x="938.4" y="126.5" fill="#04222a">10</text></g>
+            <g class="mk" style="animation-delay:.42s"><circle cx="864" cy="113" r="26" fill="url(#halo)"/><circle cx="864" cy="113" r="15" fill="#1fb6c4" filter="url(#glow)"/><text x="864" y="117.5" fill="#04222a">11</text></g>
+            <g class="mk" style="animation-delay:.46s"><circle cx="789.6" cy="131" r="26" fill="url(#halo)"/><circle cx="789.6" cy="131" r="15" fill="#1fb6c4" filter="url(#glow)"/><text x="789.6" y="135.5" fill="#04222a">12</text></g>
+            <g class="mk" style="animation-delay:.50s"><circle cx="826.8" cy="185" r="24" fill="url(#halo)"/><circle cx="826.8" cy="185" r="15" fill="#1fb6c4" filter="url(#glow)"/><text x="826.8" y="189.5" fill="#04222a">13</text></g>
+          </g>
+          <!-- OVER-SERVED markers: muted solid slate -->
+          <g font-family="IBM Plex Mono,monospace" font-size="13" font-weight="600" text-anchor="middle">
+            <g class="mk" style="animation-delay:.54s"><circle cx="538.5" cy="104" r="15" fill="#7c8a96"/><text x="538.5" y="108.5" fill="#10202b">14</text></g>
+            <g class="mk" style="animation-delay:.58s"><circle cx="399" cy="194" r="15" fill="#7c8a96"/><text x="399" y="198.5" fill="#10202b">15</text></g>
+          </g>
+        </svg>
+        <div class="tip" id="tip" role="status" aria-live="polite"></div>
+      </div>
+
+      <!-- legend -->
+      <div class="legend">
+        <div class="li"><div class="num s-gap">1</div><div class="tx"><b>Cost, tuition &amp; scholarships</b><span>Highest-intent gap, no content</span></div></div>
+        <div class="li"><div class="num s-str">2</div><div class="tx"><b>Accounting blog (MSA)</b><span>Third hub, well covered</span></div></div>
+        <div class="li"><div class="num s-gap">3</div><div class="tx"><b>GMAT waiver / no-GMAT</b><span>Top objection, unaddressed</span></div></div>
+        <div class="li"><div class="num s-gap">4</div><div class="tx"><b>Rankings / best business schools</b><span>Biggest volume, only touched</span></div></div>
+        <div class="li"><div class="num s-gap">5</div><div class="tx"><b>Finance-specific content</b><span>Audience is finance-heavy</span></div></div>
+        <div class="li"><div class="num s-part">6</div><div class="tx"><b>Program comparison</b><span>Only full-time vs. online done</span></div></div>
+        <div class="li"><div class="num s-part">7</div><div class="tx"><b>MBA for engineers / changers</b><span>Named audience, thin</span></div></div>
+        <div class="li"><div class="num s-part">8</div><div class="tx"><b>Essays &amp; interview prep</b><span>Process yes, specifics no</span></div></div>
+        <div class="li"><div class="num s-str">9</div><div class="tx"><b>Business analytics &amp; data</b><span>Deepest, best-aligned</span></div></div>
+        <div class="li"><div class="num s-str">10</div><div class="tx"><b>ROI / salary / career value</b><span>Well covered, high demand</span></div></div>
+        <div class="li"><div class="num s-str">11</div><div class="tx"><b>Jobs &amp; career paths</b><span>Strong across both hubs</span></div></div>
+        <div class="li"><div class="num s-str">12</div><div class="tx"><b>Online legitimacy &amp; accreditation</b><span>"Respected?", Quality Matters</span></div></div>
+        <div class="li"><div class="num s-str">13</div><div class="tx"><b>Application process &amp; prep</b><span>Solid foundation</span></div></div>
+        <div class="li"><div class="num s-over">14</div><div class="tx"><b>Soft skills / balancing work</b><span>Over-invested vs. demand</span></div></div>
+        <div class="li"><div class="num s-over">15</div><div class="tx"><b>Faculty spotlights &amp; local geo</b><span>Trust content, low pull</span></div></div>
+      </div>
+
+      <div class="keystrip">
+        <div class="k"><span class="g str"></span> Live signal &middot; strength</div>
+        <div class="k"><span class="g part"></span> Weak signal &middot; partial</div>
+        <div class="k"><span class="g gap"></span> Dead zone &middot; gap</div>
+        <div class="k"><span class="g over"></span> Over-served &middot; low demand</div>
+      </div>
+    </div>
+
+    <!-- ===== Figure 02: AI-assistant prompts ===== -->
+    <div class="prompts">
+      <div class="plot-head">
+        <div>
+          <div class="eyebrow">Figure 02</div>
+          <div class="t">What they ask AI assistants</div>
+          <div class="d">A third, independent SparkToro signal: the topics this audience brings to ChatGPT and similar tools. It tracks their search behavior closely, and the same gaps surface at the top.</div>
+        </div>
+      </div>
+      <div class="plot-panel pbox">
+        <div class="prow"><span class="prank">01</span><span class="plabel">Best business schools, rankings</span><span class="pbar"><i style="width:94%;background:#cf5a3c"></i></span><span class="pscore">94</span><span class="pstat gap">Gap</span></div>
+        <div class="prow"><span class="prank">02</span><span class="plabel">MBA program cost comparison</span><span class="pbar"><i style="width:90%;background:#cf5a3c"></i></span><span class="pscore">90</span><span class="pstat gap">Gap</span></div>
+        <div class="prow"><span class="prank">03</span><span class="plabel">Online MBA accreditation</span><span class="pbar"><i style="width:84%;background:#1fb6c4"></i></span><span class="pscore">84</span><span class="pstat str">Covered</span></div>
+        <div class="prow"><span class="prank">04</span><span class="plabel">MBA application timeline</span><span class="pbar"><i style="width:78%;background:#e0a64a"></i></span><span class="pscore">78</span><span class="pstat part">Partial</span></div>
+        <div class="prow"><span class="prank">05</span><span class="plabel">Master's in accounting overview</span><span class="pbar"><i style="width:77%;background:#1fb6c4"></i></span><span class="pscore">77</span><span class="pstat str">Covered</span></div>
+        <div class="prow"><span class="prank">06</span><span class="plabel">MBA scholarships in the USA</span><span class="pbar"><i style="width:75%;background:#cf5a3c"></i></span><span class="pscore">75</span><span class="pstat gap">Gap</span></div>
+        <div class="prow"><span class="prank">07</span><span class="plabel">Executive vs. full-time MBA</span><span class="pbar"><i style="width:72%;background:#e0a64a"></i></span><span class="pscore">72</span><span class="pstat part">Partial</span></div>
+        <div class="prow"><span class="prank">08</span><span class="plabel">Business school interview prep</span><span class="pbar"><i style="width:68%;background:#e0a64a"></i></span><span class="pscore">68</span><span class="pstat part">Partial</span></div>
+        <div class="prow"><span class="prank">09</span><span class="plabel">Online business degree benefits</span><span class="pbar"><i style="width:68%;background:#1fb6c4"></i></span><span class="pscore">68</span><span class="pstat str">Covered</span></div>
+        <div class="prow"><span class="prank">10</span><span class="plabel">MBA essay questions guidance</span><span class="pbar"><i style="width:67%;background:#e0a64a"></i></span><span class="pscore">67</span><span class="pstat part">Partial</span></div>
+        <div class="prow"><span class="prank">11</span><span class="plabel">Business school acceptance rates</span><span class="pbar"><i style="width:61%;background:#cf5a3c"></i></span><span class="pscore">61</span><span class="pstat gap">Gap</span></div>
+        <div class="prow"><span class="prank">12</span><span class="plabel">Part-time MBA options</span><span class="pbar"><i style="width:59%;background:#e0a64a"></i></span><span class="pscore">59</span><span class="pstat part">Partial</span></div>
+        <div class="prow"><span class="prank">13</span><span class="plabel">MBA programs with no GMAT</span><span class="pbar"><i style="width:57%;background:#cf5a3c"></i></span><span class="pscore">57</span><span class="pstat gap">Gap</span></div>
+        <div class="prow"><span class="prank">14</span><span class="plabel">Top ranked MBA programs</span><span class="pbar"><i style="width:56%;background:#cf5a3c"></i></span><span class="pscore">56</span><span class="pstat gap">Gap</span></div>
+      </div>
+      <p class="pnote">Affinity = how characteristic the topic is of this audience (0-100). Six of the top fourteen AI-prompt topics map to current blog gaps. One off-topic result ("saltwater pool costs") was dropped as noise.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PAPER ================= -->
+<div class="paper">
+
+  <!-- MATRIX -->
+  <div class="sec-head"><span class="idx">02</span><h2>Coverage matrix</h2></div>
+  <p class="sec-lead">The same picture as a ledger: what the audience signals, how many posts answer it, and the verdict. Search terms are the audience's own, pulled from the SparkToro report.</p>
+  <div class="tablecard">
+    <table>
+      <thead><tr><th>Interest cluster</th><th>What the audience searches / is</th><th style="text-align:center">Posts</th><th>Coverage</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td class="cluster">Business analytics &amp; data</td><td class="terms">business analytics masters; "data", "analyst" bios</td><td class="num">4</td><td><div class="bar"><i style="width:90%;background:var(--teal)"></i></div></td><td><span class="verdict v-str">Strength</span></td></tr>
+        <tr><td class="cluster">Jobs &amp; career paths</td><td class="terms">mba jobs; career paths; companies hiring</td><td class="num">4</td><td><div class="bar"><i style="width:86%;background:var(--teal)"></i></div></td><td><span class="verdict v-str">Strength</span></td></tr>
+        <tr><td class="cluster">ROI / salary / value</td><td class="terms">mba salary increase; is an mba worth it</td><td class="num">4</td><td><div class="bar"><i style="width:84%;background:var(--teal)"></i></div></td><td><span class="verdict v-str">Strength</span></td></tr>
+        <tr><td class="cluster">Application process &amp; prep</td><td class="terms">mba application process; how to prepare</td><td class="num">4</td><td><div class="bar"><i style="width:70%;background:var(--teal)"></i></div></td><td><span class="verdict v-str">Strength</span></td></tr>
+        <tr><td class="cluster">Online legitimacy</td><td class="terms">online mba accreditation; are online degrees respected</td><td class="num">2</td><td><div class="bar"><i style="width:82%;background:var(--teal)"></i></div></td><td><span class="verdict v-str">Strength</span></td></tr>
+        <tr><td class="cluster">Accounting (MSA hub)</td><td class="terms">masters in accounting (~26k/mo); AI in accounting, CPA, careers</td><td class="num">11</td><td><div class="bar"><i style="width:80%;background:var(--teal)"></i></div></td><td><span class="verdict v-str">Strength</span></td></tr>
+        <tr><td class="cluster">Program comparison</td><td class="terms">mba vs finance; mba vs ms analytics; mba vs emba</td><td class="num">2</td><td><div class="bar"><i style="width:33%;background:var(--gold)"></i></div></td><td><span class="verdict v-part">Partial</span></td></tr>
+        <tr><td class="cluster">Program logistics</td><td class="terms">part-time mba; program length; accelerated</td><td class="num">1</td><td><div class="bar"><i style="width:30%;background:var(--gold)"></i></div></td><td><span class="verdict v-part">Partial</span></td></tr>
+        <tr><td class="cluster">Essays &amp; interview prep</td><td class="terms">mba essay questions; interview tips</td><td class="num">1</td><td><div class="bar"><i style="width:30%;background:var(--gold)"></i></div></td><td><span class="verdict v-part">Partial</span></td></tr>
+        <tr><td class="cluster">MBA for engineers / changers</td><td class="terms">mba for engineers; career-changer intent</td><td class="num">1</td><td><div class="bar"><i style="width:22%;background:var(--gold)"></i></div></td><td><span class="verdict v-part">Partial</span></td></tr>
+        <tr><td class="cluster">Cost, tuition &amp; scholarships</td><td class="terms">mba program cost; online mba cost; scholarships</td><td class="num">0</td><td><div class="bar"><i style="width:8%;background:var(--rust)"></i></div></td><td><span class="verdict v-gap">Gap</span></td></tr>
+        <tr><td class="cluster">GMAT waiver / no-GMAT</td><td class="terms">mba gmat waiver; mba programs no gmat</td><td class="num">0</td><td><div class="bar"><i style="width:5%;background:var(--rust)"></i></div></td><td><span class="verdict v-gap">Gap</span></td></tr>
+        <tr><td class="cluster">Rankings / best schools</td><td class="terms">best business schools; top mba schools us</td><td class="num">0*</td><td><div class="bar"><i style="width:22%;background:var(--rust)"></i></div></td><td><span class="verdict v-gap">Gap</span></td></tr>
+        <tr><td class="cluster">Finance-specific</td><td class="terms">"financial", "investment", "portfolio" bios</td><td class="num">0</td><td><div class="bar"><i style="width:12%;background:var(--rust)"></i></div></td><td><span class="verdict v-gap">Gap</span></td></tr>
+        <tr><td class="cluster">Soft skills / balancing work</td><td class="terms">low direct search; nurture value</td><td class="num">3</td><td><div class="bar"><i style="width:88%;background:var(--slate)"></i></div></td><td><span class="verdict v-over">Over-served</span></td></tr>
+        <tr><td class="cluster">Faculty &amp; student spotlights</td><td class="terms">low direct search; trust + local value</td><td class="num">10</td><td><div class="bar"><i style="width:82%;background:var(--slate)"></i></div></td><td><span class="verdict v-over">Over-served</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="footnote">* Touched indirectly via "Are Online Master's Degrees Respected?" but no rankings or comparison asset exists.</p>
+
+  <!-- GAPS -->
+  <div class="sec-head" style="margin-top:74px"><span class="idx">03</span><h2>Dead zones worth filling</h2></div>
+  <p class="sec-lead">Ranked by audience demand against current coverage. Each gap pairs the missing topic with a starter post we would actually write to begin closing it.</p>
+  <div class="gaps">
+    <div class="gc"><div class="rk"><i></i>Gap 01</div><h3>Cost, tuition &amp; financing</h3>
+      <p>The audience repeatedly searches "mba program cost," "online mba cost," and "mba scholarships." The blog talks about ROI but never the actual price or how to pay for it.</p>
+      <div class="pitch"><div class="lab"><span class="pen"></span>A piece we'd write</div>
+        <div class="ptitle">"How Much Does an Online MBA Cost? (And How to Pay for It)"</div>
+        <div class="pangle">Generic question up top for reach: the real price range and the levers - scholarships, employer reimbursement, federal aid - that lower it, with Kent's numbers as the worked example and CTA.</div>
+        <div class="alt">Branded companion: "Kent State Online MBA: Tuition, Fees &amp; Aid, Explained"</div></div>
+      <div class="why"><b>Why now</b> - high-intent, decision-stage queries with strong commercial value ($19-25 CPC). A transparent cost, aid, and scholarship guide catches buyers at the moment of hesitation.</div></div>
+    <div class="gc"><div class="rk"><i></i>Gap 02</div><h3>GMAT waiver &amp; no-GMAT entry</h3>
+      <p>"mba gmat waiver" and "mba programs no gmat" recur as high-intent searches. This is often the single biggest objection for working professionals.</p>
+      <div class="pitch"><div class="lab"><span class="pen"></span>A piece we'd write</div>
+        <div class="ptitle">"Do You Need the GMAT for an MBA? Waivers and No-GMAT Options, Explained"</div>
+        <div class="pangle">Answers the universal objection - who qualifies for a waiver and how to request one - then drops in Kent's specific criteria to convert.</div>
+        <div class="alt">Branded companion: "Does Kent State's Online MBA Require the GMAT?"</div></div>
+      <div class="why"><b>Why now</b> - a clear "do you need the GMAT?" post removes a top barrier and pulls comparison shoppers.</div></div>
+    <div class="gc"><div class="rk"><i></i>Gap 03</div><h3>Comparisons beyond online vs. full-time</h3>
+      <p>The audience compares "MBA vs Masters in Finance," "MBA vs MS in Business Analytics," and "MBA vs EMBA." The blog only answers full-time vs. online.</p>
+      <div class="pitch"><div class="lab"><span class="pen"></span>A piece we'd write</div>
+        <div class="ptitle">"MBA vs. MSBA: Which Master's Fits Your Career?"</div>
+        <div class="pangle">A high-demand generic comparison; Kent's MBA and MSBA become the real-world example, routing readers to the right fit.</div>
+        <div class="alt">Follow-up: "MBA vs. Master's in Finance: How to Choose When You Love the Numbers"</div></div>
+      <div class="why"><b>Why now</b> - the college owns both MBA and MSBA, so a direct comparison serves the prospect and sends them to the right program.</div></div>
+    <div class="gc amber"><div class="rk"><i></i>Gap 04</div><h3>Finance-specific content</h3>
+      <p>The audience self-describes as "financial," "investment," "portfolio," and "financial analyst," yet nothing on the blog speaks to finance careers or the finance curriculum.</p>
+      <div class="pitch"><div class="lab"><span class="pen"></span>A piece we'd write</div>
+        <div class="ptitle">"From Analyst to Decision-Maker: How an MBA Reshapes a Finance Career"</div>
+        <div class="pangle">Speaks directly to the analysts, advisors, and portfolio professionals who make up this audience's own bios.</div>
+        <div class="alt">Follow-up: "5 Finance Roles You Can Target with an MBA, and the Skills Each Demands"</div></div>
+      <div class="why"><b>Why now</b> - content aligned to who the audience already is converts better than generic MBA content.</div></div>
+    <div class="gc amber"><div class="rk"><i></i>Gap 05</div><h3>Admissions specifics: essays &amp; interviews</h3>
+      <p>"mba essay questions," "business school interview tips," and "mba application timeline" all show steady demand. One general process post exists; the high-intent specifics don't.</p>
+      <div class="pitch"><div class="lab"><span class="pen"></span>A piece we'd write</div>
+        <div class="ptitle">"How to Answer the 'Why an MBA?' Essay (With Examples That Work)"</div>
+        <div class="pangle">A bottom-funnel, low-competition piece that helps applicants clear the final hurdle in Kent's own voice.</div>
+        <div class="alt">Follow-up: "Your MBA Admissions Interview: 8 Questions to Prepare For"</div></div>
+      <div class="why"><b>Why now</b> - these are bottom-funnel, low-competition queries a single school can realistically win.</div></div>
+  </div>
+
+  <!-- MSABTA spotlight -->
+  <div class="gc spotlight"><div class="rk"><i></i>Targeted opening &middot; inside a strength</div><h3>The new MSABTA hybrid has a program page but no blog yet</h3>
+    <p>Accounting overall is well covered by the MSA blog, so this is not a dead zone. But the college's newest flagship - the <b>MS in Accounting, Business Technology and Analytics</b> - is a separate, brand-new degree (accounting plus Python, R, machine learning, and AI). It has a live program page and zero blog content of its own, and it lands right on this audience's blended accounting-and-analytics intent and the employer demand for analytics skills on top of accounting knowledge.</p>
+    <div class="pitch"><div class="lab"><span class="pen"></span>A piece we'd write</div>
+      <div class="ptitle">"Accounting + Analytics: The Hybrid Master's Employers Are Asking For"</div>
+      <div class="pangle">Generic title for reach; MSABTA is the worked example, framed around the accounting-plus-analytics skillset employers now want.</div>
+      <div class="alt">Branded companion: "Inside Kent State's MSABTA: Where Accounting Meets Python, R &amp; AI"</div></div>
+    <div class="why"><b>Why now</b> - a brand-new, stated 2026 priority program with zero blog support, perfectly aligned to who this audience already is.</div></div>
+
+  <!-- INVENTORY -->
+  <div class="sec-head" style="margin-top:74px"><span class="idx">04</span><h2>What's already on the map</h2></div>
+  <p class="sec-lead">The full 42-post evergreen corpus, one library per priority graduate program - Online MBA, Online MSBA, and MS in Accounting.</p>
+  <div class="inv">
+    <div class="hub">
+      <h3>Online MBA hub</h3>
+      <div class="meta">/business/onlinemba/blog + related &middot; 16 posts</div>
+      <ul>
+        <li><span class="tagx x-str">ROI</span>Online MBA ROI: Is Getting an MBA Worth It?</li>
+        <li><span class="tagx x-str">ROI</span>How Will an MBA Help My Career?</li>
+        <li><span class="tagx x-str">ROI</span>MBA Statistics and Trends</li>
+        <li><span class="tagx x-str">Jobs</span>A Complete Guide to Jobs for MBA Graduates</li>
+        <li><span class="tagx x-str">Jobs</span>Stand Out to Employers with an Online MBA</li>
+        <li><span class="tagx x-str">Jobs</span>MBA for Entrepreneurs: Start Your Business?</li>
+        <li><span class="tagx x-str">Apply</span>The MBA Application Process</li>
+        <li><span class="tagx x-str">Apply</span>How to Prepare for Your MBA</li>
+        <li><span class="tagx x-str">Trust</span>Are Online Master's Degrees Respected?</li>
+        <li><span class="tagx x-str">Trust</span>Quality Matters Certified Courses</li>
+        <li><span class="tagx x-part">Compare</span>Full-Time vs. Online MBA</li>
+        <li><span class="tagx x-part">Compare</span>How to Choose the Right MBA Program</li>
+        <li><span class="tagx x-part">Logist</span>Accelerated Online MBA</li>
+        <li><span class="tagx x-over">Soft</span>Essential MBA Soft Skills</li>
+        <li><span class="tagx x-over">Soft</span>7 Strategies for Balancing Career &amp; MBA</li>
+        <li><span class="tagx x-over">Soft</span>Key Challenges MBA Students May Encounter</li>
+      </ul>
+    </div>
+    <div class="hub">
+      <h3>Online MSBA hub</h3>
+      <div class="meta">/business/msba-blog + /online-msba/blog &middot; 15 posts</div>
+      <ul>
+        <li><span class="tagx x-str">Data</span>The Impact of AI in Business Analytics</li>
+        <li><span class="tagx x-str">Data</span>Will AI Replace Business Analysts?</li>
+        <li><span class="tagx x-str">Data</span>Do You Need an Analytics Background?</li>
+        <li><span class="tagx x-str">Data</span>Get a Cross-Disciplinary Education</li>
+        <li><span class="tagx x-str">Jobs</span>5 Companies Hiring Data Analysts</li>
+        <li><span class="tagx x-str">Jobs</span>8 Career Paths with a Master's in Analytics</li>
+        <li><span class="tagx x-str">ROI</span>5 Reasons to Earn Your MSBA Degree</li>
+        <li><span class="tagx x-str">Apply</span>Preparing for Your Application / Requirements</li>
+        <li><span class="tagx x-str">Apply</span>Undergrad to MSBA Transition</li>
+        <li><span class="tagx x-over">Faculty</span>Insights from Prof. Rouzbeh Razavi</li>
+        <li><span class="tagx x-over">Faculty</span>Professor CJ Wu Spotlight</li>
+        <li><span class="tagx x-over">Faculty</span>Getting to Know Dr. Mostafa Ardakani</li>
+        <li><span class="tagx x-over">Faculty</span>Meet Scott Miller, Accounting Lecturer</li>
+        <li><span class="tagx x-over">Geo</span>Earn Your MSBA Near Canton, Ohio</li>
+        <li><span class="tagx x-over">Geo</span>Earn Your MSBA Near Akron</li>
+      </ul>
+    </div>
+    <div class="hub">
+      <h3>Online MSA hub</h3>
+      <div class="meta">/business/ms-accounting-blog &middot; ~11 posts</div>
+      <ul>
+        <li><span class="tagx x-str">Data</span>How AI Audit Tools Are Changing Accounting Hiring</li>
+        <li><span class="tagx x-str">Data</span>The New CPA Toolkit: Accounting Tech Skills</li>
+        <li><span class="tagx x-str">Data</span>Future-Proof Your Accounting Career with AI</li>
+        <li><span class="tagx x-str">Jobs</span>The Accountant Shortage in the U.S.</li>
+        <li><span class="tagx x-str">Jobs</span>Master's in Accounting Careers and Jobs</li>
+        <li><span class="tagx x-str">ROI</span>MSA and Accounting Statistics and Trends</li>
+        <li><span class="tagx x-over">Faculty</span>Q&amp;A with Prof. Mindy Nett</li>
+        <li><span class="tagx x-over">Student</span>Student Spotlight: Nathan Duthie</li>
+        <li><span class="tagx x-over">Student</span>Student Spotlight: Grace Mast</li>
+        <li><span class="tagx x-over">Student</span>Student Spotlight: Kayla Nagle</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-inner">
+    <div class="h">Method &amp; caveats</div>
+    <p><b>Method.</b> Site crawled with Screaming Frog from www.kent.edu/business under a strict /business URL scope (430 unique business pages out of 4,350 site-wide HTML pages). News and press URLs were excluded per request. The crawler was bot-blocked (HTTP 403) on most blog posts, so the corpus was completed by fetching the Online MBA, MSBA, and MS in Accounting blog hubs directly. Audience signals come from the SparkToro report "Business degree seekers and MBA program researchers" (search keywords, bio keywords, and AI-assistant prompt topics). Program priorities for 2026 (Online MBA, Online MSBA, and the new MSABTA) are drawn from the monthly client touchbase notes.</p>
+    <p><b>Reading the plot.</b> Demand and coverage scores are an analyst blend of SparkToro affinity and volume against post counts. Treat marker positions as directional, not precise coordinates.</p>
+    <p><b>One caveat.</b> Because the live blog hubs rotate, a handful of older posts may exist beyond the 42 mapped here. The thematic conclusions hold regardless.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var C={gap:'#cf5a3c',part:'#e0a64a',str:'#1fb6c4',over:'#7c8a96'};
+  var SOFT={gap:'#f8e4dd',part:'#f8eed8',str:'#e2f4f6',over:'#eceff1'};
+  var DARK={gap:'#5a2317',part:'#5a4416',str:'#0a3d44',over:'#2a333a'};
+  var D={
+    1:{t:'Cost, Tuition & Scholarships',s:'gap',d:'High',c:'0 posts',v:'Gap',n:'Searches "mba program cost", "online mba cost", "mba scholarships usa." The blog covers ROI but never the actual price or how to pay.'},
+    2:{t:'Accounting (MSA blog)',s:'str',d:'Very high (~26k/mo)',c:'~11 posts',v:'Strength',n:"Correction: the MS in Accounting has its own blog hub (AI in auditing, the CPA tech toolkit, the accountant shortage, careers, stats). The newest hybrid, MSABTA, is the lighter sub-area."},
+    3:{t:'GMAT Waiver / No-GMAT',s:'gap',d:'High intent',c:'0 posts',v:'Gap',n:'Searches "mba gmat waiver", "mba programs no gmat." Often the single biggest objection for working professionals.'},
+    4:{t:'Rankings / Best Business Schools',s:'gap',d:'Highest volume',c:'0 posts',v:'Gap',n:'"best business schools", "top mba schools us." Only touched indirectly via "Are Online Degrees Respected?"'},
+    5:{t:'Finance-Specific Content',s:'gap',d:'Medium-high',c:'0 posts',v:'Gap',n:'Audience bios skew "financial", "investment", "portfolio", "advisor" — yet nothing speaks to finance careers or curriculum.'},
+    6:{t:'Program Comparison',s:'part',d:'High',c:'2 posts',v:'Partial',n:'Covers full-time vs. online and how to choose. Missing MBA vs Finance, vs MSBA, and vs EMBA.'},
+    7:{t:'MBA for Engineers / Career Changers',s:'part',d:'Medium',c:'1 post',v:'Partial',n:'"mba for engineers" recurs. Only the entrepreneurs post is adjacent.'},
+    8:{t:'Essays & Interview Prep',s:'part',d:'Medium-high',c:'1 post',v:'Partial',n:'"mba essay questions", "interview tips." A general process post exists; the high-intent specifics do not.'},
+    9:{t:'Business Analytics & Data',s:'str',d:'High',c:'4 posts',v:'Strength',n:'"business analytics masters"; "data"/"analyst" bios. The deepest, best-aligned coverage on the blog.'},
+    10:{t:'ROI / Salary / Career Value',s:'str',d:'High',c:'4 posts',v:'Strength',n:'"mba salary increase", "is an mba worth it." Well covered against strong demand.'},
+    11:{t:'Jobs & Career Paths',s:'str',d:'High',c:'4 posts',v:'Strength',n:'"mba jobs", career paths, companies hiring. Strong across both program hubs.'},
+    12:{t:'Online Legitimacy & Accreditation',s:'str',d:'Medium-high',c:'2 posts',v:'Strength',n:'"online mba accreditation", "are online degrees respected", Quality Matters certification.'},
+    13:{t:'Application Process & Prep',s:'str',d:'Medium-high',c:'4 posts',v:'Strength',n:'"mba application process", "how to prepare." A solid foundation to build the admissions gaps on.'},
+    14:{t:'Soft Skills / Balancing Work',s:'over',d:'Low',c:'3 posts',v:'Over-served',n:'Little direct search demand. Real nurture/retention value, but not a traffic driver.'},
+    15:{t:'Faculty Spotlights & Local Geo',s:'over',d:'Low',c:'6 posts',v:'Over-served',n:'Trust and local-SEO value, but low search pull relative to the post count invested.'}
+  };
+  var tip=document.getElementById('tip');
+  var panel=document.querySelector('.plot-panel');
+  if(!tip||!panel) return;
+
+  function fill(d){
+    tip.innerHTML=
+      '<div class="tt"><span class="pip" style="background:'+C[d.s]+'"></span>'+d.t+'</div>'+
+      '<div class="row"><span class="k">Audience demand</span><span class="val">'+d.d+'</span></div>'+
+      '<div class="row"><span class="k">Blog coverage</span><span class="val">'+d.c+'</span></div>'+
+      '<div class="row"><span class="k">Verdict</span><span class="vpill" style="background:'+DARK[d.s]+';color:'+C[d.s]+'">'+d.v+'</span></div>'+
+      '<div class="note2">'+d.n+'</div>';
+  }
+  function place(cx,cy){
+    var r=panel.getBoundingClientRect();
+    var x=cx-r.left+18, y=cy-r.top+18;
+    var tw=tip.offsetWidth, th=tip.offsetHeight;
+    if(x+tw>r.width-8) x=cx-r.left-tw-18;
+    if(x<8) x=8;
+    if(y+th>r.height-8) y=r.height-th-8;
+    if(y<8) y=8;
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+  }
+  function show(d,cx,cy){ fill(d); tip.classList.add('on'); place(cx,cy); }
+  function hide(){ tip.classList.remove('on'); }
+
+  document.querySelectorAll('.mk').forEach(function(g){
+    var t=g.querySelector('text'); if(!t) return;
+    var n=parseInt(t.textContent.trim(),10); var d=D[n]; if(!d) return;
+    g.setAttribute('tabindex','0');
+    g.setAttribute('role','button');
+    g.setAttribute('aria-label',d.t+'. '+d.v+'. Demand '+d.d+', coverage '+d.c+'.');
+    g.addEventListener('mouseenter',function(e){ show(d,e.clientX,e.clientY); });
+    g.addEventListener('mousemove',function(e){ place(e.clientX,e.clientY); });
+    g.addEventListener('mouseleave',hide);
+    g.addEventListener('focus',function(){ var b=g.getBoundingClientRect(); show(d,b.left+b.width/2,b.top+b.height/2); });
+    g.addEventListener('blur',hide);
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') hide(); });
+})();
+</script>
+
+</body>
+</html>
