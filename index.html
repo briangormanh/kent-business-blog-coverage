@@ -225,7 +225,11 @@
   .channels{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:4px}
   @media(max-width:820px){.channels{grid-template-columns:1fr}}
   .chan{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
-  .chan .ch-top{padding:17px 20px 15px;border-bottom:1px solid var(--line);border-top:3px solid var(--caccent,var(--teal))}
+  .chan .ch-top{padding:15px 20px 15px;border-bottom:1px solid var(--line);border-top:3px solid var(--caccent,var(--teal))}
+  .chan .ch-step{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--caccent,var(--teal));font-weight:600;margin-bottom:11px;display:flex;align-items:center;gap:8px}
+  .chan .ch-step b{width:20px;height:20px;border-radius:50%;background:var(--caccent,var(--teal));color:#fff;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex:0 0 auto}
   .chan .ch-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .chan .ch-name{font-family:"Archivo",sans-serif;font-weight:800;font-size:16px;color:var(--ink);display:flex;align-items:center;gap:9px}
   .chan .ch-dot{width:10px;height:10px;border-radius:50%;background:var(--caccent,var(--teal));flex:0 0 auto}
@@ -534,45 +538,48 @@
 
   <!-- CHANNELS -->
   <div class="sec-head" style="margin-top:74px"><span class="idx">04</span><h2>One topic, three channels</h2></div>
-  <p class="sec-lead">Filling a gap isn't only a blog post. Because this audience over-indexes on YouTube and LinkedIn, each piece should ship in the form each platform rewards. Here is the highest-intent gap, "cost," built out across all three.</p>
+  <p class="sec-lead">Filling a gap isn't only a blog post, and it isn't three separate efforts either. Produced in the right order, a single recording cascades into all three formats. Here is the highest-intent gap, "cost," built out across the channels this audience actually uses.</p>
   <div class="channels">
-    <div class="chan" style="--caccent:var(--teal)">
-      <div class="ch-top">
-        <div class="ch-row"><div class="ch-name"><span class="ch-dot"></span>Blog</div><span class="ch-aff">The hub</span></div>
-        <div class="ch-form">Long-form written &middot; owns search &amp; AI citation</div>
-      </div>
-      <div class="ch-body">
-        <div class="ch-lab">The form it takes</div>
-        <div class="ch-title">"How Much Does an Online MBA Cost? (And How to Pay for It)"</div>
-        <p class="ch-desc">The full <b>cost-and-aid guide</b>: real price range, scholarships, employer reimbursement, federal aid, with Kent's numbers as the worked example and the primary CTA. This is the page Google and AI assistants cite.</p>
-      </div>
-    </div>
     <div class="chan" style="--caccent:#cf5a3c">
       <div class="ch-top">
+        <div class="ch-step"><b>1</b>Start here &middot; record</div>
         <div class="ch-row"><div class="ch-name"><span class="ch-dot"></span>YouTube</div><span class="ch-aff">Affinity 93 &middot; highest</span></div>
         <div class="ch-form">Video &middot; the channel they research on</div>
       </div>
       <div class="ch-body">
         <div class="ch-lab">The form it takes</div>
         <div class="ch-title">"What an Online MBA Really Costs - Tuition, Aid &amp; ROI in 8 Minutes"</div>
-        <p class="ch-desc">A <b>short talking-head explainer</b> walking through the same numbers on screen. This audience already watches MBA-cost videos from admissions creators, so the format is proven; the thumbnail asks the question they typed.</p>
+        <p class="ch-desc">A <b>short talking-head explainer</b> walking through the real numbers on screen. This is where the actual work happens - one recording, on the audience's highest-affinity channel, where they already watch MBA-cost videos from admissions creators.</p>
+      </div>
+    </div>
+    <div class="chan" style="--caccent:var(--teal)">
+      <div class="ch-top">
+        <div class="ch-step"><b>2</b>The transcript is the post</div>
+        <div class="ch-row"><div class="ch-name"><span class="ch-dot"></span>Blog</div><span class="ch-aff">The hub</span></div>
+        <div class="ch-form">Long-form written &middot; owns search &amp; AI citation</div>
+      </div>
+      <div class="ch-body">
+        <div class="ch-lab">The form it takes</div>
+        <div class="ch-title">"How Much Does an Online MBA Cost? (And How to Pay for It)"</div>
+        <p class="ch-desc">The video transcript is <b>most of the blog already</b>. Clean it up, add Kent's numbers and the CTA, and you have the cost-and-aid guide Google and AI assistants cite - for almost no extra effort.</p>
       </div>
     </div>
     <div class="chan" style="--caccent:#1f6f8f">
       <div class="ch-top">
+        <div class="ch-step"><b>3</b>Slice into a series</div>
         <div class="ch-row"><div class="ch-name"><span class="ch-dot"></span>LinkedIn</div><span class="ch-aff">Affinity 62 &middot; over-indexes</span></div>
         <div class="ch-form">Short-form text &middot; working professionals</div>
       </div>
       <div class="ch-body">
         <div class="ch-lab">The form it takes</div>
         <div class="ch-title">"The sticker price of an MBA isn't what you actually pay."</div>
-        <p class="ch-desc">A <b>120-to-180-word post or carousel</b> on the three levers that cut the cost, written for the career-pivot professional, linking back to the blog hub. One insight, not the whole guide.</p>
+        <p class="ch-desc">Each section of the blog becomes <b>its own short LinkedIn post or carousel</b> - a series, not a single share - written for the career-pivot professional and linking back to the hub.</p>
       </div>
     </div>
   </div>
   <div class="deploy-note">
-    <span class="hub-spoke">Hub and spoke</span>
-    Every priority gap gets this same treatment. The <b>blog post is the hub</b> that owns the search and AI-citation play; the <b>video and LinkedIn post are spokes</b> that reach the audience where they already are and point back to it. Reddit (affinity 66) is where this audience asks these questions, so the move there is to <b>answer in existing threads</b>, not to publish. X and TikTok don't index for this audience and can be skipped.
+    <span class="hub-spoke">The best flow</span>
+    Record the video first, then let it cascade. The <b>YouTube transcript is basically the blog post</b>, so the long-form page is near-zero extra work, and the blog then <b>slices into a series of shorter LinkedIn posts</b>. One production effort, three channels, no doubling up. Reddit (affinity 66) is where this audience asks these questions, so the move there is to <b>answer in existing threads</b>, not publish. X and TikTok don't index for this audience and can be skipped.
   </div>
 
   <!-- INVENTORY -->
